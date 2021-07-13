@@ -1,104 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- saved from url=(0046)file:///home/hddl/ltqusst.github.io/index.html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body>
-    <h1>Memos</h1>
-<h2>Install Ubuntu-based NV machine</h2>
-    <pre>GPU Driver Install ======================================================================================
-	Go into recovery mode by pressing SHIFT during boot
-		drop into shell as root and remount filesystem
-		mount -o remount,rw /
-	
-	backlist other kernel display drivers:
-		/etc/modprobe.d/blacklist.conf
-					blacklist nouveau
-					#blacklist vga16fb
-					#blacklist rivafb
-					#blacklist nvidiafb
-					#blacklist rivatv
-		/etc/default/grub
-				 GRUB_CMDLINE_LINUX="nomodeset"
-		sudo update-grub
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 
-	Install
-		 sudo sh NVIDIA-Linux-x86-185.18.14-pkg1.run 
-	reboot
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Sans-Serif;
+            line-height: 1.5em;
+            background-color: #EEEEEE
+        }
 
-CUDA======================================================================================
-
-	Kernel HEADERS
-		The kernel headers and development packages for the currently running kernel can be installed with:
-		$ sudo apt-get install linux-headers-$(uname -r)
-
-	CUDA Toolkit
-		https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;target_distro=Ubuntu&amp;target_version=1604&amp;target_type=deblocal
-
-		Installation Instructions:
-
-			`sudo dpkg -i cuda-repo-ubuntu1604-9-2-local_9.2.88-1_amd64.deb`
-			`sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub`
-			`sudo apt-get update`
-			`sudo apt-get install cuda`
-
-		Other installation options are available in the form of meta-packages. For example, to install all the library packages, replace "cuda" with the "cuda-libraries-9-2" meta package. For more information on all the available meta packages click here.
-
-		Patch 1 (Released May 16, 2018) 
-		cuBLAS 9.2 Patch Update: This update includes fix to cublas GEMM APIs on V100 Tensor Core GPUs when used with default algorithm CUBLAS_GEMM_DEFAULT_TENSOR_OP. We strongly recommend installing this update as part of CUDA Toolkit 9.2 installation.
-
-	 Meta packages
-	 Meta packages are RPM/Deb packages which contain no (or few) files but have multiple dependencies. They are used to install many CUDA packages when you may not know the details of the packages you want. Below is the list of meta packages.
-	Table 4. Meta Packages Available for CUDA 9.2 Meta Package 	Purpose
-	cuda 	Installs all CUDA Toolkit and Driver packages. Handles upgrading to the next version of the cuda package when it's released.
-	cuda-9-2 	Installs all CUDA Toolkit and Driver packages. Remains at version 9.2 until an additional version of CUDA is installed.
-	cuda-toolkit-9-2 	Installs all CUDA Toolkit packages required to develop CUDA applications. Does not include the driver.
-	cuda-tools-9-2 	Installs all CUDA command line and visual tools.
-	cuda-runtime-9-2 	Installs all CUDA Toolkit packages required to run CUDA applications, as well as the Driver packages.
-	cuda-compiler-9-2 	Installs all CUDA compiler packages.
-	cuda-libraries-9-2 	Installs all runtime CUDA Library packages.
-	cuda-libraries-dev-9-2 	Installs all development CUDA Library packages.
-	cuda-drivers 	Installs all Driver packages. Handles upgrading to the next version of the Driver packages when they're released.
+        header {
+            top: 0px;
+            width: 100%;
+            height: 50px;
+            color: white;
+            margin: 0;
+            padding-top: 0px;
+            padding-left: 20px;
+            background-color: #07055e
+        }
 
 
-cuDNN(Optional)============================================================================
-	tar xvzf cudnn-8.0-linux-x64-v5.1.tgz 
-	cd cudnn 
-	sudo cp include/cudnn.h /usr/local/cuda/include 
-	sudo cp lib64/libcudnn* /usr/local/cuda/lib64 
-	sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+        #toc {
+            float: left;
+            width: 380px;
+            height: 100%;
+            margin-left: 0%;
+            margin-top: 40px;
+            padding-bottom: 10010px;
+            margin-bottom: -10000px;
+            background: rgb(236, 235, 143);
+            padding: 10px;
+            overflow: auto;
+        }
 
+        #contents {
+            position: absolute;
+            padding: 10px;
+            margin-top: 10px;
+            margin-left: 10%;
+            margin-right: 0;
+            top: 50px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            float: left;
+            overflow: auto;
+        }
 
-docker =================================================================================
-	https://docs.docker.com/install/linux/docker-ce/ubuntu/#upgrade-docker-ce
+        .dropbtn {
+            background-color: #3498DB;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
 
-  config docker behind proxy on Ubuntu:
-  	https://docs.docker.com/config/daemon/systemd/
-  add mirror for faster pull
-        https://blog.csdn.net/shenzhen_zsw/article/details/74277518
-		add `registry-mirrors": ["http://4e70ba5d.m.daocloud.io"]` to /etc/docker/daemon.json
-		sudo service docker restart 
+        .dropbtn:hover,
+        .dropbtn:focus {
+            background-color: #2980B9;
+        }
 
-nvidia-docker2==========================================================================
-	https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0)#prerequisites
+        .dropdown {
+            position: relative;
+            margin-left: 10px;
+            display: inline-block;
+        }
 
-pull image==========================================================================
-	https://hub.docker.com/r/nvidia/cuda/tags/
-    https://gitlab.com/nvidia/cuda/tree/ubuntu16.04
+        .dropdown-content {
+            display: none;
+            position: relative;
+            height: 100%;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            line-height: 100%;
+        }
+
+        .dropdown-a:hover {
+            background-color: #ddd;
+        }
+
+        .show {
+            display: block;
+            height: 600px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
-    We can see the magic of setting up environment by docker image
-       https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/9.0/base/Dockerfile
-
-verify the installation==============================================================
-    docker run --runtime=nvidia --rm nvdia/cuda nvidia-smi
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
     
-    sudo docker run --runtime=nvidia --name caffe -it -v ~/dockerv0/:/dockerv0 --net=host nvidia/cuda /bin/bash
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
 
-install cudnn inside container=============================================
-    https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/8.0/devel/cudnn6/Dockerfile
+    <script>
+        window.onload = async function () {
+            var toc = "";
+            var level = 0;
 
-install Caffe==============================================================
-    Best practice is following dockerfile instead of installation guide
-    https://github.com/BVLC/caffe/blob/master/docker/gpu/Dockerfile
-    
+            const md_text = await (await fetch('contents.md')).text();
 
-    </version></pre>
-    <hr>
-</body></html>
+
+            marked.setOptions({
+                renderer: new marked.Renderer(),
+                highlight: function (code, lang) {
+                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return hljs.highlight(code, { language }).value;
+                },
+                pedantic: false,
+                gfm: true,
+                breaks: false,
+                sanitize: false,
+                smartLists: true,
+                smartypants: false,
+                xhtml: false
+            });
+
+            var contents = marked(md_text);
+
+            console.log("0000x");
+            document.getElementById("contents").innerHTML = contents.replace(
+                /<h([\d])[^>]*>([^<]+)<\/h([\d])>/gi,
+                function (str, openLevel, titleText, closeLevel) {
+                    if (openLevel != closeLevel) {
+                        return str;
+                    }
+
+                    if (openLevel > level) {
+                        toc += (new Array(openLevel - level + 1)).join("<ul>");
+                    } else if (openLevel < level) {
+                        toc += (new Array(level - openLevel + 1)).join("</ul>");
+                    }
+
+                    level = parseInt(openLevel);
+
+                    var anchor = titleText.replace(/ /g, "_");
+                    toc += "<li><a href=\"#" + anchor + "\" class='dropdown-a'>" + titleText
+                        + "</a></li>";
+
+                    return "<h" + openLevel + "><a name=\"" + anchor + "\">"
+                        + titleText + "</a></h" + closeLevel + ">";
+                }
+            );
+
+            if (level) {
+                toc += (new Array(level + 1)).join("</ul>");
+            }
+
+            document.getElementById("toc").innerHTML += toc;
+        };
+
+        /* When the user clicks on the button, 
+        toggle between hiding and showing the dropdown content */
+        function TOCButton() {
+            document.getElementById("toc").classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <body>
+        <header>
+            <b>Notes</b>
+            <div class="dropdown">
+                <button onclick="TOCButton()" class="dropbtn">Contents</button>
+            </div>
+        </header>
+
+        <div id="toc" class="dropdown-content">
+        </div>
+        <div id="contents">
+        </div>
+    </body>
+</body>
+
+</html>
