@@ -245,6 +245,7 @@ more general than CRTP:
 AttributeAdapter is such example.
 
 https://en.wikipedia.org/wiki/Template_metaprogramming#Static_polymorphism
+
 https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 
 # Transforming static polymorphism into dynamic polymorphism (Type erase)
@@ -275,13 +276,20 @@ ValueAccessor
 
 
 # Fluent_interface/Method chaining/cascading
-    saving developer from the cognitive burden of naming the local variables.
+saving developer from the cognitive burden of naming the local variables.
 
 typical example:
-	a + b + c*d                     //Method chaining (the intermediate variables are saved)
-	std::cout << a << b << c;	//Method_cascading
-	
+
+~~~cpp
+r = a + b + c*d  //Method chaining (the intermediate variables are saved)
+std::cout << a << b << c;	//Method_cascading
+~~~
+
 https://en.wikipedia.org/wiki/Method_cascading
+
 https://en.wikipedia.org/wiki/Method_chaining
+
 https://en.wikipedia.org/wiki/Fluent_interface
+
 https://stackoverflow.com/questions/37827808/fluent-interface-with-python
+
