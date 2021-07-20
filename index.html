@@ -11,9 +11,23 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: Sans-Serif;
-            line-height: 1.5em;
-            background-color: #EEEEEE
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        code {
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            line-height: 1.25;
+            margin-bottom: 16px;
+            border-bottom: 1px solid;
+            border-color: gray;
+            padding-bottom: .3em;
         }
 
         header {
@@ -27,13 +41,18 @@
             background-color: #07055e
         }
 
+        pre {
+            background-color: #f6f8fa;
+            margin: 10px;
+            padding: 10px;
+        }
 
         #toc {
             float: left;
             width: 380px;
-            height: 100%;
+            height: 50%;
             margin-left: 0%;
-            margin-top: 40px;
+            margin-top: 0px;
             padding-bottom: 10010px;
             margin-bottom: -10000px;
             background: rgb(236, 235, 143);
@@ -41,11 +60,25 @@
             overflow: auto;
         }
 
+        table,
+        td,
+        th {
+            border: 1px solid gray;
+        }
+
+        th {
+            background: lightgray;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
         #contents {
             position: absolute;
             padding: 10px;
             margin-top: 10px;
-            margin-left: 10%;
+            margin-left: 0;
             margin-right: 0;
             top: 50px;
             left: 0px;
@@ -104,19 +137,41 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
-    
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
 
     <script>
-        window.onload = async function () {
+
+        var cur_md_file = "";
+
+        async function open_md(mdfile) {
+
+            // var is function scoped, rather than let which is block scoped
             var toc = "";
             var level = 0;
 
-            const md_text = await (await fetch('contents.md')).text();
+            // typeof(md_text) is string
+            // string is immutable in JS (neither variable nor literal)
+            // const variable -- the label not re-assign-able
+            const md_text = await (await fetch(mdfile)).text();
 
-
+            // where does marked comes from?
+            //       the script block marked.min.js (which is compressed by uglifyjs:
+            //         check https://github.com/markedjs/marked/blob/master/Makefile)
+            //
+            // what type marked is?
+            //
+            //       a object since we call   : marked.setOptions
+            //       also, it's specifically a function object since we call : marked(md_text) 
+            //       https://github.com/markedjs/marked/blob/master/lib/marked.js
+            //
+            // what's the argument passed into setOptions()?
+            //
+            //      an object (just a collection of name-value pairs, names can be specified in dot notation)
+            //      https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript#objects
+            //
             marked.setOptions({
                 renderer: new marked.Renderer(),
                 highlight: function (code, lang) {
@@ -134,7 +189,15 @@
 
             var contents = marked(md_text);
 
-            console.log("0000x");
+            // where does this document come from?
+            //
+            //     since JS runs in hosted enviroment, host can expose
+            //     fancy functionalities to JS through built-in objects like document.
+            //     https://developer.mozilla.org/zh-CN/docs/Web/API/Document
+            //
+            //     VScode extension is implemented in this way:
+            //     https://www.youtube.com/watch?v=a5DX5pQ9p5M
+            //
             document.getElementById("contents").innerHTML = contents.replace(
                 /<h([\d])[^>]*>([^<]+)<\/h([\d])>/gi,
                 function (str, openLevel, titleText, closeLevel) {
@@ -163,25 +226,46 @@
                 toc += (new Array(level + 1)).join("</ul>");
             }
 
-            document.getElementById("toc").innerHTML += toc;
+            document.getElementById("toc").innerHTML = toc;
+        };
+
+        window.onload = async function () {
         };
 
         /* When the user clicks on the button, 
         toggle between hiding and showing the dropdown content */
-        function TOCButton() {
-            document.getElementById("toc").classList.toggle("show");
+        async function TOCButton(mdfile) {
+            //
+            // HTML class Attribute
+            //  https://www.w3schools.com/html/html_classes.asp
+            //
+            // DOM
+            //  https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+            //
+            // Type(thus supported methods like add/remove/toggle):
+            //  https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
+            //
+            toc = document.getElementById("toc");
+            if (cur_md_file === mdfile) {
+                toc.classList.toggle("show");
+            }
+            else {
+                await open_md(mdfile);
+                cur_md_file = mdfile;
+            }
         }
 
         // Close the dropdown if the user clicks outside of it
+        //    what type onclick & event is? 
+        //  https://html.spec.whatwg.org/multipage/webappapis.html#handler-onclick
+        //  https://w3c.github.io/uievents/#event-type-click
+        //
         window.onclick = function (event) {
             if (!event.target.matches('.dropbtn')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
+                for (const openDropdown of dropdowns) {
+                    if (openDropdown.classList.contains('show'))
                         openDropdown.classList.remove('show');
-                    }
                 }
             }
         }
@@ -194,13 +278,18 @@
         <header>
             <b>Notes</b>
             <div class="dropdown">
-                <button onclick="TOCButton()" class="dropbtn">Contents</button>
+                <button onclick="TOCButton('cpp.md')" class="dropbtn">C++</button>
+                <button onclick="TOCButton('js.md')" class="dropbtn">JS</button>
             </div>
         </header>
 
         <div id="toc" class="dropdown-content">
         </div>
         <div id="contents">
+            <H2> Experiences on programming languages. </H2>
+            <div align="right">
+                - by Tingqian Li.
+            </div>
         </div>
     </body>
 </body>

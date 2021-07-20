@@ -5,14 +5,14 @@ torlerance which has 2 possible forms, int or double, we would have to
 double the number of overloads to 10 which is horrible.
 
 ~~~cpp
-    test(..., int torlerance);
-    test(..., int torlerance);
-    ...
+test(..., int torlerance);
+test(..., int torlerance);
+...
 
 
-    test(..., double torlerance);
-    test(..., double torlerance);
-    ...
+test(..., double torlerance);
+test(..., double torlerance);
+...
 ~~~
 
 https://en.cppreference.com/w/cpp/language/implicit_conversion
@@ -21,21 +21,21 @@ instead, we can declare a new class which has overloaded constructors
 and without increasing number of overloads of test.
 
 ~~~cpp
-    struct Tolerance
-    {
-        BitTolerance bit{};
-        FloatTolerance fp{};
+struct Tolerance
+{
+    BitTolerance bit{};
+    FloatTolerance fp{};
 
-        Tolerance() = default;
-        Tolerance(const float tolerance)
-            : fp(tolerance)
-        {
-        }
-        Tolerance(const int tolerance)
-            : bit(tolerance)
-        {
-        }
-    };
+    Tolerance() = default;
+    Tolerance(const float tolerance)
+        : fp(tolerance)
+    {
+    }
+    Tolerance(const int tolerance)
+        : bit(tolerance)
+    {
+    }
+};
 ~~~
 
 test(..., Tolerance tol);
@@ -47,12 +47,12 @@ data or type into another Type, we can do so by template
 
 
 ~~~cpp
-    template<int a, typename T>
-    struct wrapperType
-    {
-        static int n = a;
-        using type = T;
-    };
+template<int a, typename T>
+struct wrapperType
+{
+    static int n = a;
+    using type = T;
+};
 ~~~
 
 now, wrapperType<6, ClassA> is a new type which as static member n=6 and
@@ -69,8 +69,11 @@ to it:
     test(std::sin)
 
 you have to change it to something like:
+
 	test(std::sin<float>)
+
 or
+
 	test([](float x){return std::sin(x);})
 
 If we know the exact form of the favorite overload from other template parameter,
@@ -92,13 +95,13 @@ https://stackoverflow.com/questions/16302977/static-assertions-and-sfinae
 example:
 
 ~~~cpp
-    template<template T,
-        std::enable_if<std::is_same<T, int>::value, bool>::type = true>
-    void test(T t);
+template<template T,
+    std::enable_if<std::is_same<T, int>::value, bool>::type = true>
+void test(T t);
 
-    template<template T,
-        std::enable_if<std::is_same<T, float>::value, bool>::type = true>
-    void test(T t);
+template<template T,
+    std::enable_if<std::is_same<T, float>::value, bool>::type = true>
+void test(T t);
 ~~~
 
 # Constexpr to check if a callable type is conformed to some signature:
@@ -112,8 +115,8 @@ Lambda function is const by default, use mutable to change the by-value captured
 Capture expression has a full form which allows you to define member varible 
 
 ~~~cpp
-	auto f = [count=1]() mutable {return count++;};
-	std::cout << f() << f() << f() << f() << std::endl;
+auto f = [count=1]() mutable {return count++;};
+std::cout << f() << f() << f() << f() << std::endl;
 ~~~
 
 will show 1234
@@ -123,43 +126,43 @@ So what lambda really is?
 it's simply a terse form of normal C++ functor, a syntax sugar:
 
 ~~~cpp
-	class AnonymousFunctor
-	{
-		int count{1};
-		void operator()() { return count++; }
-	} f;
+class AnonymousFunctor
+{
+    int count{1};
+    void operator()() { return count++; }
+} f;
 ~~~
 
 Or if you captured something:
 
 
 ~~~cpp
-	class AnonymousFunctor
-	{
-		int   by_val;
-		int & by_ref;
+class AnonymousFunctor
+{
+    int   by_val;
+    int & by_ref;
 
-		AnonymousFunctor(int capture_by_val, int & capture_by_ref)
-			: by_val(capture_by_val)
-			, by_ref(capture_by_ref)
-		{}
-		void operator()() { return .... }
-	} f(v1, v2);
+    AnonymousFunctor(int capture_by_val, int & capture_by_ref)
+        : by_val(capture_by_val)
+        , by_ref(capture_by_ref)
+    {}
+    void operator()() { return .... }
+} f(v1, v2);
 ~~~
 
 
 # Generic function object
 
 ~~~cpp
-	template<typename T>
-	struct func1{
-		T operator()(T x){ return x; }
-	};
+template<typename T>
+struct func1{
+    T operator()(T x){ return x; }
+};
 
-	struct func2{
-		template<typename T>
-		T operator()(T x){ return x; }
-	};
+struct func2{
+    template<typename T>
+    T operator()(T x){ return x; }
+};
 ~~~
 
 func2 is generic, because the template instantiation happens 
@@ -168,11 +171,11 @@ specify the type parameter when you create the functor:
 
 
 ~~~cpp
-	auto f1 = func1<int>{};
-	auto f2 = func2{};
+auto f1 = func1<int>{};
+auto f2 = func2{};
 
-	std::cout << f1(1.2) << std::endl;
-	std::cout << f2(1.2) << std::endl;
+std::cout << f1(1.2) << std::endl;
+std::cout << f2(1.2) << std::endl;
 ~~~
 
 will show:
@@ -197,35 +200,35 @@ template/generic code and the real call dispatch is determined at
 compile time rather than run-time.
 
 ~~~cpp
-    enum ShapeType
-    {
-        Circle,
-        Rectangle
-    };
+enum ShapeType
+{
+    Circle,
+    Rectangle
+};
 
-    template<ShapeType s>
-    struct Shape{};
+template<ShapeType s>
+struct Shape{};
 
-    template<>
-    struct Shape<Circle>{
-        float r;
-        Shape(float r):r(r){}
-        float area(){ return 3.14f*r*r;}
-    };
+template<>
+struct Shape<Circle>{
+    float r;
+    Shape(float r):r(r){}
+    float area(){ return 3.14f*r*r;}
+};
 
-    template<>
-    struct Shape<Rectangle>{
-        float w, h;
-        Shape(float w, float h):w(w), h(h){}
-        float area(){ return w*h;}
-    };
+template<>
+struct Shape<Rectangle>{
+    float w, h;
+    Shape(float w, float h):w(w), h(h){}
+    float area(){ return w*h;}
+};
 
-    //only generic template code can benifit from static polymorphism
-    template<ShapeType A, ShapeType B>
-    bool compare_area(Shape<A> & a, Shape<B> & b)
-    {
-        return a.area() > b.area();
-    }
+//only generic template code can benifit from static polymorphism
+template<ShapeType A, ShapeType B>
+bool compare_area(Shape<A> & a, Shape<B> & b)
+{
+    return a.area() > b.area();
+}
 ~~~
 
 Different from dynamic version, the functions implemented in static polymorphism 
