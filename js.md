@@ -68,9 +68,9 @@ Key features of OOP:
 
 1. member: JS Object is always a key-value pairs map, no matter it was constructed by whatever fancy syntax. since function is also an object, so member variable is the same as member function.
 
-2. inherit: JS Object has a internal reference to a "prototype" object, when member is being accessed by dot-notation or map-notation, it first look-up in local map, if failed, it will go to "prototype" object to check, which also has it's own "prototype" reference, layer-by-layer.   
+2. inherit: JS Object has a internal reference to a "prototype" object, when a member name is being referenced, engine will first look-up in local map, then goes up to check "prototype", then prototype's prototype, ... etc, until a matching key was found or use undefined when not found.
 
-    Note *prototype is similar to "class" concept since many objects can has their "prototype" reference the same one, and that same one is the "class", except unlike class/type, the prototype is also an object itself (dynamic mutable).*
+    Note *prototype is similar to "class" concept when many objects can has their "prototype" reference to the same prototype object, but unlike traditional static class/type, the prototype itself is also an object thus dynamic mutable.*
 
 3. polymorphism: it's terribly natural for dynamic typing language, no extra effort needed.
 
@@ -115,7 +115,7 @@ Key features of OOP:
 
 2. class keyword: EcmaScript 6, fancier syntax, sweeter sugar. but nothing is changed under the hood.
 
-    **Note: don't be fooled by it and think that there is really such thing as "class" in JS.**
+    **Note: don't be fooled by the keyword, there is no class in JS.**
 
 ~~~JS
   class Animal {
