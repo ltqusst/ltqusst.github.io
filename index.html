@@ -140,8 +140,10 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
-
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
 
     <script>
 
@@ -157,6 +159,32 @@
             // string is immutable in JS (neither variable nor literal)
             // const variable -- the label not re-assign-able
             const md_text = await (await fetch(mdfile)).text();
+
+            const renderer = new marked.Renderer();
+            //const renderer_org = new marked.Renderer()
+
+            function mathsExpression(expr) {
+                expr = expr.trim()
+                if (expr.match(/^\$\$[\s\S]*\$\$$/)) {
+                    expr = expr.substr(2, expr.length - 4);
+                    return katex.renderToString(expr, { displayMode: true });
+                } else if (expr.match(/^\$[\s\S]*\$$/)) {
+                    expr = expr.substr(1, expr.length - 2);
+                    return katex.renderToString(expr, { isplayMode: false });
+                }
+            }
+
+            renderer.codespan_org = renderer.codespan
+            renderer.codespan = function (text) {
+                const math = mathsExpression(text);
+                return math || this.codespan_org(text);
+            }
+
+            renderer.paragraph_org = renderer.paragraph
+            renderer.paragraph = function (text) {
+                const math = mathsExpression(text);
+                return math || this.paragraph_org(text);
+            }
 
             // where does marked comes from?
             //       the script block marked.min.js (which is compressed by uglifyjs:
@@ -174,7 +202,7 @@
             //      https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript#objects
             //
             marked.setOptions({
-                renderer: new marked.Renderer(),
+                renderer: renderer,
                 highlight: function (code, lang) {
                     const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                     return hljs.highlight(code, { language }).value;

@@ -134,8 +134,13 @@ Key features of OOP:
   leo.eat(12)   // Leo is eating.
   snoop.eat(10) // Snoop is eating.
 
-  // Animal is simply a function
-  Animal instanceof Function          // true
+  // What is Animal?
+  Animal instanceof Function          // true:  since you can call "new" upon it
+  Object.getOwnPropertyNames(Animal)            // ["length", "prototype", "name"]
+  Object.getOwnPropertyNames(Animal.prototype)  // "constructor", "eat"
+
+  // you can see "name","energy" is not Animal's property, but eat is.
+  // since only "eat" is share-able among all instance of Animals
   Animal.prototype === leo.__proto__  // true
   Animal.prototype.eat.call(leo, 10)  // Leo is eating.
 ~~~
@@ -144,9 +149,66 @@ https://ui.dev/beginners-guide-to-javascript-prototype/
 
 # Function expression (lambda)
 
-
+$$
+P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}
+$$
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#the_function_expression_function_expression
+
+# Node.js module
+
+1. module is wrapped in a function when being "required", the exports/require/module/__filename/__dirname that we can use in module are just arguments to that function.
+
+2. require() returns the module.exports object which is changed in that module file.
+
+~~~JS
+  // m.js
+  console.log(arguments)
+  console.log(module.exports === exports)
+  module.exports.x = 1
+  module.exports.y = 2
+~~~
+
+~~~JS
+  // app.js
+  const m = require('./m.js')
+  console.log(m)
+~~~
+
+~~~Bash
+$ node ./app.js
+[Arguments] {
+  '0': {},                            <===  exports
+  '1': [Function: require] {...},     <===  require
+  '2': Module {...},                  <===  module
+  '3': '/.../ltqusst.github.io/m.js', <===  __filename
+  '4': '/.../ltqusst.github.io'       <===  __dirname
+}
+true                    <===   exports is just another reference to module.exports
+{ x: 1, y: 2 }          <===   m is the module.exports object
+~~~
+
+
+
+# Support math equation render
+
+[marked](https://github.com/markedjs/marked) is a JS lib for converting MD file into html, by overriding the render's corresponding property, we can support rendering math equation with the help from [katex](https://katex.org).
+
+for example: 
+
+[codespan](https://www.markdownguide.org/basic-syntax/#code) enclosed by $ :
+
+| Syntax      | Rendered |
+| ----------- | ----------- |
+| \`$ a_i=\sqrt{({b_i})} $\`      | `$ a_i=\sqrt{({b_i})} $`       |
+
+
+[paragraph](https://www.markdownguide.org/basic-syntax/#paragraphs-1) enclosed by $$ :
+
+$$
+  a_i=\sqrt{({b_i})}
+$$
+
 
 # Good resources
 
