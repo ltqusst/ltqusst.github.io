@@ -1,6 +1,39 @@
 
         var cur_md_file = "";
 
+        function code_editor(element_id) {
+            let editor = CodeMirror.fromTextArea(document.getElementById(element_id), {
+                lineNumbers: true,
+                styleActiveLine: true,
+                matchBrackets: true
+            });
+            return editor
+        }
+        
+        var js_code_id = 0
+        var js_codes = {}
+
+        function run_js(id) {
+            log = "";
+            oldLog = console.log;
+            console.log=function(msg){
+                log += msg + "\n"
+            }
+            
+            try {
+                let f = new Function(js_codes[id]);
+                f();
+            } catch(e) {
+                log += "exception happened: " + e;
+            } finally {
+                console.log = oldLog;
+            }
+            element = document.getElementById(`log_${id}`);
+            element.innerHTML = log
+            element.style.display="block";
+            console.log(log);
+        }
+
         async function open_md(mdfile) {
 
             // var is function scoped, rather than let which is block scoped
@@ -25,6 +58,55 @@
                     return katex.renderToString(expr, { isplayMode: false });
                 }
             }
+
+            js_code_id = 0;
+            js_codes = {};
+
+            renderer.code_org = renderer.code
+            renderer.code = function(code, infostring, escaped) {
+                const lang = (infostring || '').match(/\S*/)[0];
+
+                js_code_id ++;
+                js_codes[js_code_id] = code;
+
+                run_in_browser = code.indexOf("//run_in_browser") >= 0;
+                if (run_in_browser)
+                    code = code.replace(/\/\/run_in_browser/g,'');
+                
+                if (this.options.highlight) {
+                  const out = this.options.highlight(code, lang);
+                  if (out != null && out !== code) {
+                    escaped = true;
+                    code = out;
+                  }
+                }
+            
+                code = code.replace(/\n$/, '') + '\n';
+            
+                if (!lang) {
+                  return '<pre><code>'
+                    + (escaped ? code : escape(code, true))
+                    + '</code></pre>\n';
+                }
+
+                if (run_in_browser) {
+                    return '<pre><code class="'
+                    + this.options.langPrefix
+                    + escape(lang, true)
+                    + `">`
+                    + (escaped ? code : escape(code, true))
+                    + `</code><button onclick='run_js(${js_code_id});'>RUN</button><br></pre>\n`
+                    + `<pre class='result' id="log_${js_code_id}"></pre>\n`;
+                }
+
+                html = '<pre><code class="'
+                  + this.options.langPrefix
+                  + escape(lang, true)
+                  + '">'
+                  + (escaped ? code : escape(code, true))
+                  + '</code></pre>\n';
+                return html;
+            };
 
             renderer.codespan_org = renderer.codespan
             renderer.codespan = function (text) {
@@ -98,7 +180,7 @@
                     toc += "<li><a href=\"#" + anchor + "\" class='dropdown-a'>" + titleText
                         + "</a></li>";
 
-                    return "<h" + openLevel + "><a href=\"#" + anchor + "\" name=\"" + anchor + "\" class='anchor-a'>"
+                    return "<h" + openLevel + "><a href=\"#" + anchor + "\" class='anchor-a'>"
                         + titleText + "</a></h" + closeLevel + ">";
                 }
             );

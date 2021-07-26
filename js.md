@@ -25,25 +25,23 @@ function object is not like C++ lambda. especially when you saw **this** keyword
         console.log(`this=${this} ${this.name} args=${args}`)
     }
 
-    fun instanceof Function; // true
-    fun instanceof Object;   // true
+    console.log(fun instanceof Function);
+    console.log(fun instanceof Object);
     fun.v = 1;               // you can add more key-value pairs
 
-    let w = {name: "w"};
-    w.f = fun;              // now, w.f is a symbol to function object
+    let w = {name: "w", f: fun};
+    console.log(w.f === fun)
 
     globalThis.name = "g"   // globalThis/window is this in function context
 
-    fun(1, 2)          // this=[object global] g args=1,2
-    fun.call(1, 2);    // this=1 undefined args=2
-    fun.call(w, 1, 2); // this=[object Object] w args=1,2
+    fun(1, 2)
+    fun.call(1, 2);
+    w.f.call(1, 2);
 
-    console.log(w.f === fun)    // true
-
-    w.f.call(1, 2);     // same as fun.call(1, 2);
-    w.f.call(w, 1, 2);  // same as fun.call(w, 1, 2);
-
-    w.f(1, 2);         // this=[object Object] w args=1,2
+    w.f(1, 2);
+    fun.call(w, 1, 2);
+    w.f.call(w, 1, 2);
+    //run_in_browser
 ~~~
 
 You can see the function object is supposed to be invoked on different object other than itself.
@@ -72,21 +70,19 @@ Key features of OOP:
 
     Note *prototype is similar to "class" concept when many objects can has their "prototype" reference to the same prototype object, but unlike traditional static class/type, the prototype itself is also an object thus dynamic mutable.*
 
+~~~JS
+  a={};                           console.log(Object.prototype === a.__proto__)
+  Object.prototype.name = "OBJ";  console.log(a.name)
+  a.name = "a";                   console.log(a.name)
+  delete a.name;                  console.log(a.name)
+  delete Object.prototype.name;   console.log(a.name)
+  //run_in_browser
+~~~
+
 3. polymorphism: it's terribly natural for dynamic typing language, no extra effort needed.
 
-~~~JS
-  a={}
-  Object.prototype === a.__proto__  // true
-  Object.prototype.name = "OBJ"     // prototype now has a new member "name"
-  console.log(a.name)               // -> OBJ  a also got this member
-  a.name = "a"        // now a has a local member key "name", prototype's member is overrided
-  console.log(a.name)       // a
 
-  delete a.name                     // the member key is mutable (unlike traditional class)
-  console.log(a.name)               // -> OBJ
-  delete Object.prototype.name      // prototype is also mutable (ofcause)
-  console.log(a.name)               // -> undefined  it's gone
-~~~
+
 
 # Syntax sugar/magic for prototype
 
@@ -111,6 +107,7 @@ Key features of OOP:
   // quite obvious that leo & snoop has Animal.prototype as their prototype
   leo.eat(12)   // Leo is eating.
   snoop.eat(10) // Snoop is eating.
+  //run_in_browser
 ~~~
 
 2. class keyword: EcmaScript 6, fancier syntax, sweeter sugar. but nothing is changed under the hood.
@@ -135,23 +132,20 @@ Key features of OOP:
   snoop.eat(10) // Snoop is eating.
 
   // What is Animal?
-  Animal instanceof Function          // true:  since you can call "new" upon it
-  Object.getOwnPropertyNames(Animal)            // ["length", "prototype", "name"]
-  Object.getOwnPropertyNames(Animal.prototype)  // "constructor", "eat"
+  console.log(Animal instanceof Function)
+  console.log(`Animal has properties: ${Object.getOwnPropertyNames(Animal)}`)
+  console.log(`Animal.prototype: ${Object.getOwnPropertyNames(Animal.prototype)}`)
 
   // you can see "name","energy" is not Animal's property, but eat is.
   // since only "eat" is share-able among all instance of Animals
-  Animal.prototype === leo.__proto__  // true
+  console.log(Animal.prototype === leo.__proto__)  // true
   Animal.prototype.eat.call(leo, 10)  // Leo is eating.
+  //run_in_browser
 ~~~
 
 https://ui.dev/beginners-guide-to-javascript-prototype/
 
 # Function expression (lambda)
-
-$$
-P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}
-$$
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#the_function_expression_function_expression
 
