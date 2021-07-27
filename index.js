@@ -84,6 +84,7 @@
                 code = code.replace(/\n$/, '') + '\n';
             
                 if (!lang) {
+                  escaped = true;
                   return '<pre><code>'
                     + (escaped ? code : escape(code, true))
                     + '</code></pre>\n';
@@ -99,13 +100,12 @@
                     + `<pre class='result' id="log_${js_code_id}"></pre>\n`;
                 }
 
-                html = '<pre><code class="'
+                return '<pre><code class="'
                   + this.options.langPrefix
                   + escape(lang, true)
                   + '">'
                   + (escaped ? code : escape(code, true))
                   + '</code></pre>\n';
-                return html;
             };
 
             renderer.codespan_org = renderer.codespan
@@ -180,7 +180,7 @@
                     toc += "<li><a href=\"#" + anchor + "\" class='dropdown-a'>" + titleText
                         + "</a></li>";
 
-                    return "<h" + openLevel + "><a href=\"#" + anchor + "\" class='anchor-a'>"
+                    return "<h" + openLevel + "><a name=\"" + anchor + "\" class='anchor-a'>"
                         + titleText + "</a></h" + closeLevel + ">";
                 }
             );
