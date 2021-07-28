@@ -17,7 +17,7 @@
         }
 
         code {
-            font-family: consolas,"Liberation Mono",courier,monospace;
+            font-family: consolas, "Liberation Mono", courier, monospace;
             font-size: 14px;
         }
 
@@ -25,8 +25,9 @@
             background-color: black;
             color: blanchedalmond;
             margin-left: 20px;
-            display: none;
             font-size: 14px;
+            height: 100px;
+            overflow: auto;
         }
 
         h1 {
@@ -49,7 +50,7 @@
             padding-top: 0px;
             padding-left: 20px;
             background-color: rgb(14, 14, 14);
-            box-shadow: 0 2px 10px 0 rgba(0,0,0,.15);
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .15);
         }
 
         pre {
@@ -70,7 +71,7 @@
             background: white;
             padding: 10px;
             overflow: auto;
-            box-shadow: 0 2px 10px 0 rgba(0,0,0,.15);
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .15);
         }
 
         table,
@@ -119,7 +120,8 @@
 
         .dropdown-content {
             display: none;
-            position: fixed;;
+            position: fixed;
+            ;
             top: 50px;
             height: 100%;
             background-color: #f1f1f1;
@@ -128,15 +130,18 @@
             box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
         }
+
         .anchor-a {
             color: black;
-            text-decoration:none;
+            text-decoration: none;
             padding-top: 60px;
             margin-top: -60px;
         }
-        .anchor-a:hover{
-            text-decoration:underline;
+
+        .anchor-a:hover {
+            text-decoration: underline;
         }
+
         .dropdown-a {
             color: black;
             padding: 12px 16px;
@@ -153,6 +158,54 @@
             display: block;
             height: 600px;
         }
+
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -162,12 +215,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.62.2/lib/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.62.2/lib/codemirror.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/javascript/javascript.min.js"></script>
+
+    <script src="./index.js"></script>
+
     <script>
 
     </script>
-    <script src="./index.js"></script>
 </head>
 
 <body>
@@ -183,14 +239,35 @@
             </div>
         </header>
 
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div> Source Code Editor - powered by CodeMirror.js <span class="close">&times;</span></div>
+                <br>
+                <div id="editor"></div>
+                <button id="editor_run">RUN</button>
+                <pre id="editor_result" class="result"></pre>
+            </div>
+        </div>
+
+        
         <div id="toc" class="dropdown-content">
         </div>
         <div id="contents">
+            <button id="myBtn">Open Modal</button>
             <H2> Experiences on programming languages. </H2>
             <div align="right">
                 - by Tingqian Li.
             </div>
         </div>
+
+
+        <script>
+
+
+        </script>
+                
     </body>
 </body>
 

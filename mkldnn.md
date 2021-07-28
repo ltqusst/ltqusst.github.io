@@ -22,7 +22,7 @@
 
 Thus we can see since stride of w is always 8, so the channel is padded when (C%8 > 0).
 
-In this layout, SIMD registers can be easily loaded with spatially neighbours comes from different channels:
+In this layout, SIMD registers can be easily loaded with elements from different spatial location in the same SIMD lane :
 
 | addr | reg | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
 |---- |---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |

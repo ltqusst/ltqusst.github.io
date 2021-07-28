@@ -12,26 +12,24 @@
         
         var js_code_id = 0
         var js_codes = {}
+        var editor = null;
 
-        function run_js(id) {
-            log = "";
-            oldLog = console.log;
-            console.log=function(msg){
-                log += msg + "\n"
-            }
-            
-            try {
-                let f = new Function(js_codes[id]);
-                f();
-            } catch(e) {
-                log += "exception happened: " + e;
-            } finally {
-                console.log = oldLog;
-            }
-            element = document.getElementById(`log_${id}`);
-            element.innerHTML = log
-            element.style.display="block";
-            console.log(log);
+        // When the user clicks the button, open the modal 
+        function show_editor_window(id) {
+            let modal = document.getElementById("myModal")
+            let result = document.getElementById("editor_result")
+            modal.style.display = "block";
+            if (editor === null) {
+                editor = CodeMirror(document.querySelector('#editor'), {
+                    lineNumbers: true,
+                    tabSize: 2,
+                    value: js_codes[id],
+                    mode: 'javascript'
+                    });
+                editor.setSize(null, 500);
+            } else
+                editor.getDoc().setValue(js_codes[id])
+            result.innerHTML = "";
         }
 
         async function open_md(mdfile) {
@@ -61,6 +59,7 @@
 
             js_code_id = 0;
             js_codes = {};
+
 
             renderer.code_org = renderer.code
             renderer.code = function(code, infostring, escaped) {
@@ -96,8 +95,7 @@
                     + escape(lang, true)
                     + `">`
                     + (escaped ? code : escape(code, true))
-                    + `</code><button onclick='run_js(${js_code_id});'>RUN</button><br></pre>\n`
-                    + `<pre class='result' id="log_${js_code_id}"></pre>\n`;
+                    + `</code><button onclick='show_editor_window(${js_code_id});'>RUN</button><br></pre>\n`;
                 }
 
                 return '<pre><code class="'
@@ -193,6 +191,41 @@
         };
 
         window.onload = async function () {
+
+            // Get the modal
+            var modal = document.getElementById("myModal");
+
+            // Get the button that opens the modal
+            var btn = document.getElementById("myBtn");
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+            var editor_run = document.getElementById("editor_run");
+            
+            editor_run.onclick = function(){
+                log = "";
+                oldLog = console.log;
+                console.log=function(msg){
+                    log += msg + "\n"
+                }
+                
+                try {
+                    let f = new Function(editor.getDoc().getValue());
+                    f();
+                } catch(e) {
+                    log += "exception happened: " + e;
+                } finally {
+                    console.log = oldLog;
+                }
+                element = document.getElementById("editor_result");
+                element.innerHTML = log
+                console.log(log);
+            }
+                
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
         };
 
         /* When the user clicks on the button, 
