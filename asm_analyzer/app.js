@@ -6,7 +6,7 @@ const child_process = require('child_process')
 const fs = require('fs');
 
 const app = express()
-const port = 3000
+const port = 80
 
 app.use(bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -23,15 +23,18 @@ app.get('/index.js', function(req, res) {
 });
 
 // POST method route
-app.post('/run', function (req, res) {
+app.post('/run', async function (req, res) {
   console.log(`run\n ${req.body.src}`);
   
   fs.writeFile('input.s', req.body.src, function (err){
     if (err) return console.log(err);
+
     child_process.exec('./a.out ./input.s', 
       function(error, stdout, stderr){
-        if (error) console.log(error);
-        res.send(stdout);
+        if (error) {
+          console.log(error);
+        }
+        res.send(stderr + stdout);
       });
   });
 });
