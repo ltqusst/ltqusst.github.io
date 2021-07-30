@@ -25,18 +25,27 @@ app.get('/index.js', function(req, res) {
 // POST method route
 app.post('/run', async function (req, res) {
   console.log(`run\n ${req.body.src}`);
-  
-  fs.writeFile('input.s', req.body.src, function (err){
-    if (err) return console.log(err);
 
-    child_process.exec('./a.out ./input.s', 
-      function(error, stdout, stderr){
-        if (error) {
-          console.log(error);
-        }
-        res.send(stderr + stdout);
+  // create temp files with random name
+  fs.mkdtemp("temp-", (err, folder) => {
+    if (err)
+      console.log(err);
+    else {
+      fs.writeFile(`${folder}/input.s`, req.body.src, function (err){
+        if (err) return console.log(err);
+      
+        child_process.exec(`./a.out ./${folder}/input.s`, 
+          function(error, stdout, stderr){
+            if (error)
+              console.log(error);
+
+            res.send(stderr + stdout);
+            fs.rmdirSync(folder, { recursive: true });
+          });
       });
+    }
   });
+
 });
 
 app.listen(
