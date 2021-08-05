@@ -203,6 +203,12 @@ $$
   a_i=\sqrt{({b_i})}
 $$
 
+# Promisification
+
+Many legacy JS module only supports callback-style async API rather than Promise-style.
+Promisification is a util to turn them into promise-based one. 
+
+https://javascript.info/promisify
 
 # Good resources
 

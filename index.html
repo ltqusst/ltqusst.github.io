@@ -18,14 +18,14 @@
 
         code {
             font-family: consolas, "Liberation Mono", courier, monospace;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .result {
             background-color: black;
             color: blanchedalmond;
             margin-left: 20px;
-            font-size: 14px;
+            font-size: 12px;
             height: 100px;
             overflow: auto;
         }
@@ -167,11 +167,12 @@
             /* Stay in place */
             z-index: 1;
             /* Sit on top */
-            padding-top: 100px;
+            /*padding-top: 100px;*/
             /* Location of the box */
             left: 0;
             top: 0;
             width: 100%;
+            max-width: 500px;
             /* Full width */
             height: 100%;
             /* Full height */
@@ -187,9 +188,13 @@
         .modal-content {
             background-color: #fefefe;
             margin: auto;
-            padding: 20px;
+            padding: 0px;
             border: 1px solid #888;
-            width: 80%;
+            width: 100%;
+        }
+
+        #editor {
+            height: 80%;
         }
 
         /* The Close Button */
@@ -255,7 +260,6 @@
         <div id="toc" class="dropdown-content">
         </div>
         <div id="contents">
-            <button id="myBtn">Open Modal</button>
             <H2> Experiences on programming languages. </H2>
             <div align="right">
                 - by Tingqian Li.
