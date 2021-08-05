@@ -19,6 +19,7 @@
         code {
             font-family: consolas, "Liberation Mono", courier, monospace;
             font-size: 12px;
+            display: block;
         }
 
         .result {
@@ -211,6 +212,15 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        .htmltext {
+            width: 100%;
+            display: none;
+            resize: vertical;
+            overflow: auto;
+            white-space: nowrap;
+        }
+        
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 

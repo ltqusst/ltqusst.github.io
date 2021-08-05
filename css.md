@@ -10,6 +10,8 @@ Markdown+CSS is better than MS word on WWW in my opinion.
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/display
 
+  *  none can be used to hide element completely, whole layout will be affected.
+
 ~~~html
 <span>[span0]</span>
 <span>[span1]</span>
@@ -20,13 +22,52 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/display
 <div style="display: none" id="div2"> [div2] </div>
 <div style="display: inline" > [div3] </div>
 <div> [div4] </div>
+
 <script>
-    // none can be used to hide element completely, whole layout will be affected.
     var display = false;
     window.onclick=function(){
         let div2 = document.getElementById("div2");
         div2.style.display = display?"none":"inline";
         display = !display;
+    }
+</script>
+~~~
+
+# display : inline-block
+
+* like inline, it dosen't take whole width (no return to new line)
+* like block,  it supports width/height/margin/padding style (inline is not)
+* vertical-align determines how it was aligned in line with other inline elements
+
+~~~html
+<style>
+    .b{
+         display: inline-block;
+         background-color: lightyellow;
+         border:1px solid red;
+         width: 50px;
+         height: 50px;
+         vertical-align: baseline;
+    }
+</style>
+<div style="width: 200px; background-color: lightblue">
+<p>
+The vertical-align attribute of <div class=b id=div1>inline-block1</div> <div class=b id=div2>block2</div>
+<sup>sup</sup> <sub>sub</sub> are set to "<span id=value>baseline</span>".
+</p>
+</div>
+<script>
+    var vertical_align = ["baseline","sub","super","top","text-top","middle","bottom","text-bottom"];
+    var i = 0;
+    var div1 = document.getElementById("div1");
+    var div2 = document.getElementById("div2");
+    var v = document.getElementById("value");
+    window.onclick=function(){
+        let va = vertical_align[i % vertical_align.length];
+        i++;
+        v.innerText = va;
+        div1.style["vertical-align"] = va;
+        div2.style["vertical-align"] = va;
     }
 </script>
 ~~~
@@ -77,7 +118,6 @@ overflow:  <span id=overflow_op>auto</span>
 <p style="background-color: yellow; padding: 0px; margin: 0; margin-left: 10px; width: 50px">Content</p>
 </div>
 <script>
-    // none can be used to hide element completely, whole layout will be affected.
     var display = false;
     var divc = document.getElementById("divc");
     var overflow_op = document.getElementById("overflow_op");

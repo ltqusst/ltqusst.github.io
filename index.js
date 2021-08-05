@@ -29,6 +29,34 @@ function show_editor_window(id) {
     result.innerHTML = '';
 }
 
+var g_md_render;
+
+function highlight(code, lang="html"){
+    return g_md_render.options.highlight ? g_md_render.options.highlight(code, lang):code;
+}
+
+function html_onclick(code_id) {
+    let H = this.offsetHeight
+    this.style.display='none';
+    let t = document.getElementById(`text${code_id}`);
+    t.value = this.innerText;
+    t.style.display='block';
+    t.focus();
+    t.style.height = H + "px";
+}
+
+function text_onchange(code_id) {
+    document.getElementById(`iframe${code_id}`).srcdoc = this.value;
+    let code=document.getElementById(`code${code_id}`);
+    code.innerHTML = g_md_render.options.highlight ? g_md_render.options.highlight(this.value, 'html'):this.value;
+}
+
+function text_onblur(code_id) {
+    this.style.display='none';
+    let code=document.getElementById(`code${code_id}`);
+    code.style.display='block';
+}
+
 async function open_md(mdfile) {
   // var is function scoped, rather than let which is block scoped
   var toc = '';
@@ -41,6 +69,7 @@ async function open_md(mdfile) {
 
   const renderer = new marked.Renderer();
   // const renderer_org = new marked.Renderer()
+  g_md_render = renderer;
 
   function mathsExpression(expr) {
     expr = expr.trim()
@@ -65,6 +94,8 @@ async function open_md(mdfile) {
     js_code_id++;
     js_codes[js_code_id] = code;
 
+    raw_code = code;
+
     run_in_browser = code.indexOf('//run_in_browser') >= 0;
     if (run_in_browser) code = code.replace(/\/\/run_in_browser/g, '');
 
@@ -85,13 +116,14 @@ async function open_md(mdfile) {
     }
 
     if (lang == 'html') {
-      return '<pre><code class="' + this.options.langPrefix +
-          escape(lang, true) + '" >' + (escaped ? code : escape(code, true)) +
-          '</code>' +
+      return `<pre><code id='code${js_code_id}' class="${this.options.langPrefix}${escape(lang, true)}"
+                         onclick="html_onclick.call(this, '${js_code_id}')">${(escaped ? code : escape(code, true))}</code>` + 
+              `<textarea id=text${js_code_id}
+                        onblur="text_onblur.call(this, '${js_code_id}')"
+                        onchange="text_onchange.call(this, '${js_code_id}')" class="htmltext"></textarea>` +
           '<div style="border:2px dotted lightgray; background-color: white">' +
-          '<iframe style="width:100%;" frameborder=0 onload="if(!this.loaded){this.srcdoc=this.parentElement.parentElement.innerText;this.loaded=true;}"></iframe>' +
-          '</div>' +
-          '</pre>';
+          `<iframe style="width:100%;" id=iframe${js_code_id} frameborder=0 onload="if(!this.loaded){this.srcdoc=document.getElementById('code${js_code_id}').innerText;this.loaded=true;}"></iframe>` +
+          '</div></pre>';
     }
 
     if (run_in_browser) {
